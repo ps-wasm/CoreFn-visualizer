@@ -1,0 +1,29 @@
+* {
+  padding: 0px;
+  margin: 0px;
+
+}
+
+textarea {
+  height: 40px;
+}
+
+.node circle {
+  fill: #fff;
+  /*stroke: red;*/
+  stroke-width: 2px;
+}
+
+.node text {
+  font: 14px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
+
+svg {
+  float: left;
+}

@@ -12,7 +12,7 @@ let recCoreFnElements =
     , "expression"
     , "body"
     , "abstraction"
-    /*,"argument"*/
+    , "argument"
     , "caseAlternatives"
     , "caseExpressions"
     , "binders"
@@ -95,49 +95,6 @@ function update(source) {
     .attr("text-anchor", "middle")
     .text(function (d) {
       return d.label
-      // if (d.type === 'Abs') {
-      //   return "\u03BB" + d.argument
-      // }
-      // else if (d.type === 'App') {
-      //   return '@'
-      // }
-      // /*
-      // else if (d.type === 'Var') {
-      //   let ident = d.children.identifier
-      //   let module = ""
-      //   if (d.children.hasOwnProperty("moduleName")) {
-      //     d.children.moduleName.forEach(element => {
-      //       module = module + element + "."
-      //     });
-      //   }
-      //   return module + ident
-      // }
-      // */
-      // else if (d.type !== undefined) {
-      //   return d.type;
-      // }
-      // else if (d.value !== undefined) {
-      //   return d.value;
-      // }
-      // else if (d.hasOwnProperty("binderType")) {
-      //   return d.binderType
-      // }
-      // else {
-      //   if (d.hasOwnProperty("identifier")) {
-      //     let ident = d.identifier
-      //     let module = ""
-      //     // if (d.hasOwnProperty("moduleName")) {
-      //     //   d.moduleName.forEach(element => {
-      //     //     module = module + element + "."
-      //     //   });
-      //     // }
-      //     return module + ident
-      //   }
-      //   else {
-      //     return "[ ]"
-      //   }
-
-      // }
     })
     .style("fill-opacity", 1);
 
@@ -162,7 +119,24 @@ function transformCoreFn(key, coreFn) {
 
 
   let node = { label: key, children: [] };
-  if (coreFn.hasOwnProperty("type")) {
+  if (key === "value") {
+    if (coreFn.hasOwnProperty("identifier")) {
+      let ns = ""
+      if (coreFn.hasOwnProperty("moduleName")) {
+        coreFn.moduleName.forEach(element => {
+          ns = ns + element + "."
+        });
+      }
+      node.label = ns + coreFn.identifier
+    }
+    else {
+      node.label = coreFn.value
+    }
+  }
+  else if (key === "literal") {
+    node.label = coreFn.value
+  }
+  else if (coreFn.hasOwnProperty("type")) {
     if (coreFn.type === "App") {
       node.label = "@"
     }
@@ -173,18 +147,14 @@ function transformCoreFn(key, coreFn) {
       node.label = coreFn.type
     }
   }
-  if (coreFn.hasOwnProperty("identifier")) {
-    if (key === "value") {
-      let ns = ""
-      if (coreFn.hasOwnProperty("moduleName")) {
-        coreFn.moduleName.forEach(element => {
-          ns = ns + element + "."
-        });
-        //ns = ns + "\n"
-      }
-      node.label = ns + coreFn.identifier
-    }
+  else if (coreFn.hasOwnProperty("binderType")) {
+    node.label = coreFn.binderType
+  }
+  else if (coreFn.hasOwnProperty("identifier")) {
     node.label = coreFn.identifier
+  }
+  else if (!isNaN(key)) {
+    node.label = "[" + key + "]"
   }
 
 
@@ -192,12 +162,14 @@ function transformCoreFn(key, coreFn) {
   for (const property in coreFn) {
     let value = coreFn[property];
     if (typeof (value) === 'object') {
-      if (recCoreFnElements.includes(property) || Array.isArray()) {
-        node.children.push(transformCoreFn(property, value))
+      if (recCoreFnElements.includes(property) || !isNaN(property)) {
+        let propertyName = property
+        if (Array.isArray(value)) {
+          propertyName = propertyName + " \u005B \u005D"
+        }
+        node.children.push(transformCoreFn(propertyName, value))
       }
     }
-
-
   }
 
 

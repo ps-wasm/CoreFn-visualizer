@@ -1,4 +1,3 @@
-
 let coreFnData;
 let currentDepth = 0;
 let maxDepth = 0;
@@ -7,21 +6,23 @@ let margin = { top: 60, right: 20, bottom: 20, left: 20 };
 let width = window.innerWidth - margin.right - margin.left;
 let height = window.innerHeight - margin.top - margin.bottom;
 
+
 let recCoreFnElements =
   ["decls"
-    , "expression"
-    , "body"
-    , "abstraction"
-    , "argument"
-    , "caseAlternatives"
-    , "caseExpressions"
-    , "binders"
-    , "literal"
-    , "value"
-    , "binds"
+  , "expression"
+  , "body"
+  , "abstraction"
+  , "argument"
+  , "caseAlternatives"
+  , "caseExpressions"
+  , "binders"
+  , "literal"
+  , "value"
+  , "binds"
   ]
 
 
+// handle submit
 function submit() {
   let elems = document.getElementsByTagName("svg");
   let errorP = document.getElementById("error")
@@ -46,7 +47,7 @@ function submit() {
   }
 }
 
-
+// creates vertical tree
 function update(source) {
   let i = 0;
 
@@ -103,7 +104,7 @@ function update(source) {
 }
 
 
-
+// process coreFn and create relevant treedata
 function transformCoreFn(key, coreFn) {
   currentDepth++;
   if (currentDepth > maxDepth) {
@@ -161,8 +162,6 @@ function transformCoreFn(key, coreFn) {
     node.label = "[" + key + "]"
   }
 
-
-
   for (const property in coreFn) {
     let value = coreFn[property];
     if (typeof (value) === 'object') {
@@ -177,9 +176,6 @@ function transformCoreFn(key, coreFn) {
         node.children.push(transformCoreFn(propertyName, value))
       }
     }
-    // else if (property === "value") {
-    //   node.children.push(transformCoreFn(property, value))
-    // }
   }
 
   currentDepth--;
@@ -187,6 +183,7 @@ function transformCoreFn(key, coreFn) {
   return node;
 }
 
+// computes max of recursive value
 function maxRec(object, key) {
   let retVal = 0;
   if (object !== undefined) {
@@ -201,12 +198,13 @@ function maxRec(object, key) {
   return retVal;
 }
 
+// wraps namespaced identifiers
 function wrap(text) {
   text.each(function () {
     var text = d3.select(this),
       words = text.text().split("."),
       lineNumber = 0,
-      lineHeight = 1, // ems
+      lineHeight = 1,
       x = text.attr("x"),
       y = text.attr("y"),
       dy = 0
@@ -217,7 +215,7 @@ function wrap(text) {
       text.append("tspan")
         .attr("x", 0)
         .attr("y", -10)
-        .attr("dy", ++lineNumber * lineHeight + dy + "em")
+        .attr("dy", ++ lineNumber * lineHeight + dy + "em")
         .text(word);
     });
   });

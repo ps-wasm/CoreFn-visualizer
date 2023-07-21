@@ -125,6 +125,9 @@ function transformCoreFn(key, coreFn) {
     else {
       if (coreFn.hasOwnProperty("literalType")) {
         node.label = coreFn.literalType
+        if (!Array.isArray(coreFn.value)) {
+          node.label = node.label + ": " + coreFn.value
+        }
       }
       else {
         node.label = coreFn.value
@@ -147,6 +150,9 @@ function transformCoreFn(key, coreFn) {
   }
   else if (coreFn.hasOwnProperty("binderType")) {
     node.label = coreFn.binderType
+    if (coreFn.hasOwnProperty("identifier")) {
+      node.label = node.label + ": " + coreFn.identifier
+    }
   }
   else if (coreFn.hasOwnProperty("identifier")) {
     node.label = coreFn.identifier
@@ -162,15 +168,18 @@ function transformCoreFn(key, coreFn) {
     if (typeof (value) === 'object') {
       if (recCoreFnElements.includes(property) || !isNaN(property)) {
         let propertyName = property
+        if (!isNaN(propertyName)) {
+          propertyName = "[" + propertyName + "]"
+        }
         if (Array.isArray(value)) {
           propertyName = propertyName + " \u005B \u005D"
         }
         node.children.push(transformCoreFn(propertyName, value))
       }
     }
-    else {
-      node.children.push(transformCoreFn(propertyName, value))
-    }
+    // else if (property === "value") {
+    //   node.children.push(transformCoreFn(property, value))
+    // }
   }
 
   currentDepth--;

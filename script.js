@@ -168,6 +168,9 @@ function transformCoreFn(key, coreFn) {
         node.children.push(transformCoreFn(propertyName, value))
       }
     }
+    else {
+      node.children.push(transformCoreFn(propertyName, value))
+    }
   }
 
   currentDepth--;

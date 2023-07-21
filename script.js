@@ -44,7 +44,7 @@ function submit() {
   catch (e) {
     errorP.innerText = e
   }
- }
+}
 
 
 function update(source) {
@@ -123,7 +123,12 @@ function transformCoreFn(key, coreFn) {
       node.label = ns + coreFn.identifier
     }
     else {
-      node.label = coreFn.value
+      if (Array.isArray(coreFn.value)) {
+        node.label = "[ ]"
+      }
+      else {
+        node.label = coreFn.value
+      }
     }
   }
   else if (key === "literal") {

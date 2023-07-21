@@ -24,24 +24,27 @@ let recCoreFnElements =
 
 function submit() {
   let elems = document.getElementsByTagName("svg");
+  let errorP = document.getElementById("error")
+  errorP.innerText = ""
+
   while (elems.length > 0) {
     elems[0].remove();
   }
 
-
-  //elems.forEach(x=>x.remove());
-  coreFnData = JSON.parse(document.getElementById("corefn-data").value);
-  //console.log(coreFnData);
-
-  let root = transformCoreFn("decls", coreFnData['decls'][2]);
-  //for (const decl in root.children) {
-  //  update(decl);
-  //}
-  update(root);
-  console.log(coreFnData);
-}
-
-
+  try {
+    coreFnData = JSON.parse(document.getElementById("corefn-data").value);
+    if (coreFnData.hasOwnProperty("decls")) {
+      let root = transformCoreFn("decls", coreFnData['decls']);
+      update(root);
+    }
+    else {
+      errorP.innerText = "Not recognized as CoreFn JSON"
+    }
+  }
+  catch (e) {
+    errorP.innerText = e
+  }
+ }
 
 
 function update(source) {
@@ -58,7 +61,7 @@ function update(source) {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
 
-  // Compute the new tree layout.
+
   let nodes = tree.nodes(source).reverse();
   let links = tree.links(nodes);
 
@@ -67,14 +70,11 @@ function update(source) {
   let scale = height / maxRec(source, "y");
   svg.attr("transform", `scale(${scale}) translate(${margin.left}, ${margin.right})`);
 
-  // Normalize for fixed-depth.
-  nodes.forEach(function (d) { d.x = d.x / scale });
+  nodes.forEach(function (d) { d.x = 1.8 * d.x / scale });
 
-  // Declare the nodes…
   let node = svg.selectAll("g.node")
     .data(nodes, function (d) { return d.id || (d.id = ++i); });
 
-  // Enter the nodes.
   let nodeEnter = node.enter().append("g")
     .attr("class", "node")
     .attr("transform", function (d) {
@@ -86,27 +86,20 @@ function update(source) {
     .style("fill", "#fff");
 
   nodeEnter.append("text")
-    /*
-    .attr("y", function (d) {
-      return d.children || d._children ? -20 : 20;
-    })
-    */
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
-    .text(function (d) {
-      return d.label
-    })
+    .text(function (d) { return d.label })
+    .call(wrap)
     .style("fill-opacity", 1);
 
-  // Declare the links…
+  // Declare links
   let link = svg.selectAll("path.link")
     .data(links, function (d) { return d.target.id; });
 
-  // Enter the links.
+  // Enter links
   link.enter().insert("path", "g")
     .attr("class", "link")
     .attr("d", diagonal);
-
 }
 
 
@@ -172,75 +165,6 @@ function transformCoreFn(key, coreFn) {
     }
   }
 
-
-
-
-  //console.log(property);
-  /*
-      if (!["annotation", "sourcePos", "moduleName"].includes(property)) {
-        if (value.hasOwnProperty("type")) {
-          let type = value.type
-          if (type === "App") {
-            node.label = "@"
-          }
-          else if (type === "Abs") {
-            let arg = value.argument
-            node.label = "\u03BB" + arg
-          }
-          else {
-            node.label = type
-          }
-        }
-        else {
-          if ()
-          node.label = property
-        }
-        if (typeof (value) === 'object') {
-          node.children = []
-          node.children.push(transformCoreFn(value))
-        }
-      }
-    }
-    /*
-        if (typeof (value) === 'object') {
-          if (property === "annotation" || property === "sourcePos" || property === "moduleName") {
-            //console.log("skip property")
-          }
-          else if (property === "value") {
-            let ns = ""
-    
-            if (value.hasOwnProperty("moduleName")) {
-              value.moduleName.forEach(element => {
-                ns = ns + element + "."
-              });
-              ns = ns + "\n"
-            }
-    
-            value.identifier = ns + value.identifier
-            
-            if (!node.hasOwnProperty('children')) {
-              node['children'] = [];
-            }
-            node['children'].push(transformCoreFn(value));
-            
-            
-            // let tObj = {};
-            // tObj[property] = ident
-            // Object.assign(node, tObj);
-          }
-          else {
-            if (!node.hasOwnProperty('children')) {
-              node['children'] = [];
-            }
-            node['children'].push(transformCoreFn(value));
-          }
-        }
-        else {
-          let tObj = {};
-          tObj[property] = value;
-          Object.assign(node, tObj);
-        }
-      }*/
   currentDepth--;
 
   return node;
@@ -260,16 +184,24 @@ function maxRec(object, key) {
   return retVal;
 }
 
+function wrap(text) {
+  text.each(function () {
+    var text = d3.select(this),
+      words = text.text().split("."),
+      lineNumber = 0,
+      lineHeight = 1, // ems
+      x = text.attr("x"),
+      y = text.attr("y"),
+      dy = 0
 
-/*
+    text.text(null)
 
-        if (d.hasOwnProperty("identifier")) {
-          let ident = d.identifier
-          let parts = ident.split(".")
-          return ident
-        }
-        else {
-          return "[ ]"
-        }
-
-        */
+    words.forEach(word => {
+      text.append("tspan")
+        .attr("x", 0)
+        .attr("y", -10)
+        .attr("dy", ++lineNumber * lineHeight + dy + "em")
+        .text(word);
+    });
+  });
+}

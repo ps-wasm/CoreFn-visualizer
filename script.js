@@ -123,8 +123,8 @@ function transformCoreFn(key, coreFn) {
       node.label = ns + coreFn.identifier
     }
     else {
-      if (Array.isArray(coreFn.value)) {
-        node.label = "[ ]"
+      if (coreFn.hasOwnProperty("literalType")) {
+        node.label = coreFn.literalType
       }
       else {
         node.label = coreFn.value

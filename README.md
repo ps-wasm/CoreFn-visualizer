@@ -4,4 +4,5 @@ This is a very limited CoreFn declaration visualizer. It is meant to help reason
 Only a limited number of declarations and / or a limited tree depth is supported.
 
 #### Acknowledgements
-I used code to start building a vertical tree D3 tree found [here](https://codepen.io/katzkode/pen/ZegQQB). Besides that, I used the example used to create multiline node text is found [here](https://gist.github.com/mbostock/7555321) to build my own `wrap` function that wraps namespaced identifiers.
+- I used the example found [here](https://codepen.io/katzkode/pen/ZegQQB) code to start building a vertical tree D3 tree.
+- I used the example found [here](https://gist.github.com/mbostock/7555321) to create my own `wrap` function that wraps the labels of namespaced identifiers.

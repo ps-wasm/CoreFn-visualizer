@@ -32,8 +32,21 @@ h1 {
   line-height: 150%;
 }
 
-h4 {
-  color: #888;
+p {
+  color: #555;
+}
+
+a {
+  color: #555;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #555;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 #error {

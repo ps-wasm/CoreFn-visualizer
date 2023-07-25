@@ -1,6 +1,10 @@
 # CoreFn visualizer
 This is a limited CoreFn declaration visualizer. It is meant to help reasoning about CoreFn structures in the research for my bachelor's thesis.
 
+### How to use
+- Compile your PureScript project with CoreFn as generated output (`purs build --codegen corefn` or, if using spago `spago build --purs-args "--codegen corefn"`
+- Open the generated CoreFn JSON file, copy the content and paste it in the textbox
+- Click 'Create graph'
 
 ### Known limitations
 - Only declarations are included in the graph. Other information, like exports, imports, foreign functions etc. are omitted.
